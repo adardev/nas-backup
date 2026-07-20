@@ -1,0 +1,11 @@
+[Unit]
+Description=Move photos from temp to gallery
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c "while true; do /bin/bash /root/move_photos.sh; sleep 1; done"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

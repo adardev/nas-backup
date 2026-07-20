@@ -1,0 +1,16 @@
+// Papelera de reciclaje de Windows y archivos de configuracion de vista
+(?d)(?i)$RECYCLE.BIN
+(?d)(?i)desktop.ini
+(?d)(?i)thumbs.db
+
+// Archivos temporales y ocultos de macOS
+(?d)(?i).DS_Store
+(?d)(?i).AppleDouble
+(?d)(?i).LSOverride
+(?d)(?i)._*
+
+// Archivos ocultos genericos y temporales de Linux/Unix
+(?d).*
+(?d)*~
+(?d)os-configs
+(?d)1densora

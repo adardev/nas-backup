@@ -1,0 +1,13 @@
+[Unit]
+Description=MergerFS mount for adarlpz-nas
+After=network-fs.target zfs-mount.target
+RequiresMountsFor=/srv/dev-disk-by-uuid-43007630-4746-4f1c-9703-538ae923dcaa /srv/dev-disk-by-uuid-05f75cee-0c30-4dec-abf6-55a1bae2d47e
+
+[Mount]
+What=adarlpz:6aca0c86-abf0-4ba7-b598-3b35e78c2aaf
+Where=/srv/mergerfs/adarlpz-nas
+Type=fuse.mergerfs
+Options=branches=/srv/dev-disk-by-uuid-43007630-4746-4f1c-9703-538ae923dcaa:/srv/dev-disk-by-uuid-05f75cee-0c30-4dec-abf6-55a1bae2d47e,category.create=epmfs,minfreespace=4G,fsname=adarlpz-nas:6aca0c86-abf0-4ba7-b598-3b35e78c2aaf,defaults,allow_other
+
+[Install]
+WantedBy=multi-user.target

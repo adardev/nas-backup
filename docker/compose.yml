@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - /srv/mergerfs/adarlpz:/srv
+      - /srv/mergerfs/adarlpz-nas:/srv
       - /ComposeFiles/configs/filebrowser/filebrowser.db:/database/filebrowser.db
     environment:
       - PUID=1000
@@ -23,7 +23,7 @@ services:
       - TZ=America/Mexico_City
     volumes:
       - /ComposeFiles/configs/syncthing:/config
-      - /srv/mergerfs/adarlpz:/data
+      - /srv/mergerfs:/data
     ports:
       - "8384:8384"
       - "22000:22000/tcp"

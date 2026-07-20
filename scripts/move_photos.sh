@@ -1,24 +1,33 @@
 #!/bin/bash
 set -euo pipefail
 
-DEST="/srv/mergerfs/adarlpz/gallery/"
-mkdir -p "$DEST"
+ADARLPZ="/srv/mergerfs/adarlpz-nas/adarlpz"
+MANI="/srv/mergerfs/adarlpz-nas/mani"
+DEST_ADARLPZ="$ADARLPZ/gallery"
+DEST_MANI="$MANI/galeria"
 
-for source in \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_photos/ \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_screenshots/ \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_whatsapp/ \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_screenrecordings/ \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_lightroom/ \
-  /srv/mergerfs/adarlpz/.temp_adarlpz_whatsappvideos/ \
-  /srv/mergerfs/adarlpz/.temp_mani_photos/ \
-  /srv/mergerfs/adarlpz/.temp_mani_screenshots/ \
-  /srv/mergerfs/adarlpz/.temp_mani_whatsapp/ \
-  /srv/mergerfs/adarlpz/.temp_mani_screenrecordings/ \
-  /srv/mergerfs/adarlpz/.temp_mani_whatsappvideos/; do
-  mkdir -p "$source"
-  find "$source" -maxdepth 1 -type f -mmin +2 -exec mv -- {} "$DEST" \;
+mkdir -p "$DEST_ADARLPZ" "$DEST_MANI"
+
+for dir in \
+  "$ADARLPZ/.temp_adarlpz_photos" \
+  "$ADARLPZ/.temp_adarlpz_screenshots" \
+  "$ADARLPZ/.temp_adarlpz_whatsapp" \
+  "$ADARLPZ/.temp_adarlpz_screenrecordings" \
+  "$ADARLPZ/.temp_adarlpz_lightroom" \
+  "$ADARLPZ/.temp_adarlpz_whatsappvideos" \
+  "$ADARLPZ/.temp_adarlpz_quickshare"; do
+  find "$dir" -maxdepth 1 -type f -mmin +0.08 -exec mv -- {} "$DEST_ADARLPZ" \;
 done
 
-chown -R 1000:1000 "$DEST"
-chmod -R 775 "$DEST"
+for dir in \
+  "$MANI/.temp_mani_photos" \
+  "$MANI/.temp_mani_screenshots" \
+  "$MANI/.temp_mani_whatsapp" \
+  "$MANI/.temp_mani_screenrecordings" \
+  "$MANI/.temp_mani_whatsappvideos" \
+  "$MANI/.temp_mani_quickshare"; do
+  find "$dir" -maxdepth 1 -type f -mmin +0.08 -exec mv -- {} "$DEST_MANI" \;
+done
+
+chown -R 1000:1000 "$DEST_ADARLPZ" "$DEST_MANI"
+chmod -R 775 "$DEST_ADARLPZ" "$DEST_MANI"
