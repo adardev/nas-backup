@@ -10,11 +10,12 @@ docker/compose.yml              # File Browser + Syncthing
 scripts/move_photos.sh           # Archivado automatico de multimedia
 systemd/
   move-photos.service            # Servicio que ejecuta move_photos.sh
-  srv-mergerfs-adarlpz-nas.mount # Montaje mergerfs (pool de discos)
   smartctl-hdparm.service        # Tuneado de discos (OMV)
 nginx/
   openmediavault-webgui          # Config del reverse proxy nginx
   security.conf                  # Headers de seguridad
+omv/
+  fusemergerfs.inc               # Backend OMV para fuse.mergerfs
 syncthing/
   .stignore.root                 # Patrones ignore raiz del NAS
   .stignore.adaredu              # Patrones ignore carpeta adaredu

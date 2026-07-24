@@ -39,16 +39,35 @@ Agregar a `/etc/fstab`:
 
 ## 3. Mergerfs
 
-Copiar `systemd/srv-mergerfs-adarlpz-nas.mount` a `/etc/systemd/system/`:
+Agregar la siguiente linea al final de `/etc/fstab`:
+
+```
+adarlpz:6aca0c86-abf0-4ba7-b598-3b35e78c2aaf  /srv/mergerfs/adarlpz-nas  fuse.mergerfs  defaults,allow_other,nofail,category.create=epmfs,minfreespace=4G,fsname=adarlpz-nas  0  0
+```
 
 ```bash
-cp systemd/srv-mergerfs-adarlpz-nas.mount /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable --now srv-mergerfs-adarlpz-nas.mount
+mkdir -p /srv/mergerfs/adarlpz-nas
+mount -a
 ```
+
+> **Nota**: Se usa fstab en vez de systemd mount unit porque systemd 257
+> (Debian 13) requiere que el nombre del unit coincida exactamente con la
+> ruta, y `fuse.mergerfs` genera conflictos con la validacion de nombres.
+> El enfoque con fstab es mas confiable y simple.
 
 Pool: fusiona los dos discos en `/srv/mergerfs/adarlpz-nas`
 Politica: `epmfs` (existing path most free space), minfreespace=4G
+
+### Backend OMV para fuse.mergerfs
+
+OMV no incluye un backend para el tipo de filesystem `fuse.mergerfs`. Copiar
+el archivo `omv/fusemergerfs.inc` a `/usr/share/php/openmediavault/system/filesystem/backend/`:
+
+```bash
+cp omv/fusemergerfs.inc /usr/share/php/openmediavault/system/filesystem/backend/
+```
+
+Esto permite que OMV reconozca y gestione pools mergerfs desde la interfaz web.
 
 ### Estructura de directorios
 
@@ -172,6 +191,7 @@ minutos de antiguedad.
 ```bash
 cp nginx/openmediavault-webgui /etc/nginx/sites-available/openmediavault-webgui
 cp nginx/security.conf /etc/nginx/openmediavault-webgui.d/security.conf
+cp omv/fusemergerfs.inc /usr/share/php/openmediavault/system/filesystem/backend/
 systemctl enable --now nginx php8.4-fpm
 ```
 
