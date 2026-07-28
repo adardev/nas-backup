@@ -39,24 +39,23 @@ Agregar a `/etc/fstab`:
 
 ## 3. Mergerfs
 
-Agregar la siguiente linea al final de `/etc/fstab`:
-
-```
-adarlpz:6aca0c86-abf0-4ba7-b598-3b35e78c2aaf  /srv/mergerfs/adarlpz-nas  fuse.mergerfs  defaults,allow_other,nofail,category.create=epmfs,minfreespace=4G,fsname=adarlpz-nas  0  0
-```
+Copiar el servicio `systemd/mergerfs-mount.service` a `/etc/systemd/system/` y habilitarlo:
 
 ```bash
-mkdir -p /srv/mergerfs/adarlpz-nas
-mount -a
+cp systemd/mergerfs-mount.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now mergerfs-mount.service
 ```
-
-> **Nota**: Se usa fstab en vez de systemd mount unit porque systemd 257
-> (Debian 13) requiere que el nombre del unit coincida exactamente con la
-> ruta, y `fuse.mergerfs` genera conflictos con la validacion de nombres.
-> El enfoque con fstab es mas confiable y simple.
 
 Pool: fusiona los dos discos en `/srv/mergerfs/adarlpz-nas`
 Politica: `epmfs` (existing path most free space), minfreespace=4G
+
+> **Nota**: Se usa un servicio systemd en vez de fstab o mount unit porque
+> systemd 257 (Debian 13) escapa mal los nombres con guiones (`\x2d`), y el
+> mount
+> units `fuse.mergerfs` fallan. El servicio ejecuta `mergerfs` directo tras
+> montar los discos, y Docker está configurado para esperar a este servicio
+> (`Requires=mergerfs-mount.service`).
 
 ### Backend OMV para fuse.mergerfs
 
@@ -68,6 +67,22 @@ cp omv/fusemergerfs.inc /usr/share/php/openmediavault/system/filesystem/backend/
 ```
 
 Esto permite que OMV reconozca y gestione pools mergerfs desde la interfaz web.
+
+### Docker espera a mergerfs
+
+Para que los contenedores no arranquen antes de que mergerfs esté listo, editar
+`/etc/systemd/system/docker.service.d/waitAllMounts.conf`:
+
+```ini
+[Unit]
+After=local-fs.target mergerfs-mount.service srv-dev\x2ddisk\x2dby\x2duuid\x2d05f75cee\x2d0c30\x2d4dec\x2dabf6\x2d55a1bae2d47e.mount srv-dev\x2ddisk\x2dby\x2duuid\x2d43007630\x2d4746\x2d4f1c\x2d9703\x2d538ae923dcaa.mount
+Requires=mergerfs-mount.service
+```
+
+Luego recargar:
+```bash
+systemctl daemon-reload
+```
 
 ### Estructura de directorios
 

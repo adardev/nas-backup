@@ -1,0 +1,14 @@
+[Unit]
+Description=Mount mergerfs pool adarlpz-nas
+After=srv-dev\x2ddisk\x2dby\x2duuid\x2d43007630\x2d4746\x2d4f1c\x2d9703\x2d538ae923dcaa.mount srv-dev\x2ddisk\x2dby\x2duuid\x2d05f75cee\x2d0c30\x2d4dec\x2dabf6\x2d55a1bae2d47e.mount
+Requires=srv-dev\x2ddisk\x2dby\x2duuid\x2d43007630\x2d4746\x2d4f1c\x2d9703\x2d538ae923dcaa.mount srv-dev\x2ddisk\x2dby\x2duuid\x2d05f75cee\x2d0c30\x2d4dec\x2dabf6\x2d55a1bae2d47e.mount
+Before=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/mergerfs /srv/dev-disk-by-uuid-43007630-4746-4f1c-9703-538ae923dcaa:/srv/dev-disk-by-uuid-05f75cee-0c30-4dec-abf6-55a1bae2d47e /srv/mergerfs/adarlpz-nas -o category.create=epmfs,minfreespace=4G,fsname=adarlpz-nas,defaults,allow_other
+ExecStop=/bin/umount /srv/mergerfs/adarlpz-nas
+
+[Install]
+WantedBy=multi-user.target
